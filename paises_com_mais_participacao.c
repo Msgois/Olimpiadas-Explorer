@@ -210,7 +210,7 @@ int paises_com_mais_participacao() {
 
   // Esporte que será pesquisado. Leia o README para a lista de esportes.
   char discipline[257];
-  printf("Escolha um país na lista do README:\n");
+  printf("Escolha um esporte da lista do README:\n");
   scanf(" %256s", discipline);
 
   // Analisando as linhas de "results.csv" para pegar a quantidade de atletas
