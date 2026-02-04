@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "AcessarRegioes.c"
-#include "countries_with_most_participation.c"
+#include "paises_com_mais_participacao.c"
 
 int main() {
   char questao;
