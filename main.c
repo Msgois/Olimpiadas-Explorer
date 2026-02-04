@@ -23,7 +23,7 @@ int main() {
 
     return 0;
   case '3':
-    countries_with_most_participation();
+    paises_com_mais_participacao();
 
     return 0;
   case '4':
