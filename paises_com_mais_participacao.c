@@ -297,7 +297,7 @@ int paises_com_mais_participacao() {
   fprintf(gnuplot_pipe, "set term pngcairo\n");
   fprintf(gnuplot_pipe, "set output 'graph.png'\n");
   fprintf(gnuplot_pipe,
-          "set title 'Top 10 Countries with the Most %s Players'\n",
+          "set title 'Top 10 Países com mais jogadores de %s (nomes dos países em inglês)'\n",
           discipline);
   fprintf(gnuplot_pipe, "set boxwidth 0.5\n");
   fprintf(gnuplot_pipe, "set style fill solid\n");
