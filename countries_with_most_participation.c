@@ -218,24 +218,22 @@ int countries_with_most_participation() {
     ENTRY field;
     ENTRY *field_pointer;
 
-    // Skips the first two columns.
-    parse_csv_field(&cursor);
-    parse_csv_field(&cursor);
-
-    char *discipline_field = parse_csv_field(&cursor);
-
-    // Skips the line if the sport isn't the one the user chose.
-    if (strcmp(discipline_field, discipline) != 0) {
-      continue;
-    }
-
-    // Skips the three entries after the discipline because we only care
-    // about the NOC.
-    for (int i = 0; i < 3; i++) {
+    // Skips the first seven columns.
+    for (int i = 0; i < 7; i++) {
       parse_csv_field(&cursor);
     }
 
+    // NOC.
     field.key = parse_csv_field(&cursor);
+
+    // Discipline (sport).
+    char *discipline_field = parse_csv_field(&cursor);
+
+    // Skips the line if the sport isn't the one the user chose.
+    if (!discipline_field || strcmp(discipline_field, discipline) != 0) {
+      continue;
+    }
+
     field_pointer = hsearch(field, FIND);
 
     // Incrementing the number of athletes IN THE HASH TABLE. Later on, we'll
@@ -302,6 +300,8 @@ int countries_with_most_participation() {
           discipline);
   fprintf(gnuplot_pipe, "set boxwidth 0.5\n");
   fprintf(gnuplot_pipe, "set style fill solid\n");
+  // Prevents overlapping issues with the labels.
+  fprintf(gnuplot_pipe, "set xtics rotate by -45\n");
   fprintf(gnuplot_pipe, "plot 'data.dat' using 1:3:xtic(2) ti 'Athletes' with boxes\n");
 
   hdestroy();
