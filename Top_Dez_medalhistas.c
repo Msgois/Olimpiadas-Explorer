@@ -4,7 +4,7 @@
 #include <locale.h>
 
 #define MAX_LINHA 1024
-#define MAX_ATLETAS 10000 
+#define MAX_ATLETAS 10000
 
 typedef struct {
     char nome[100];
@@ -18,7 +18,7 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
 
     for (int i = 0; linha[i] != '\0'; i++) {
         if (linha[i] == '"') {
-            dentro_de_aspas = !dentro_de_aspas; 
+            dentro_de_aspas = !dentro_de_aspas;
         } else if (linha[i] == ',' && !dentro_de_aspas) {
             if (campo_atual == indice_campo) break;
             campo_atual++;
@@ -27,9 +27,9 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
             destino[j++] = linha[i];
         }
     }
-    destino[j] = '\0'; 
+    destino[j] = '\0';
 }
 
 int Top_Des_medalhistas(){
-    
+
 }

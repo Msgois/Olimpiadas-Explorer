@@ -139,6 +139,7 @@ int paises_com_mais_participacao() {
     // Inteiro temporairo para o caso específico de Tuvalu. Para mais
     // informações, prossiga com a leitura.
     int noc_tuvalu = 0;
+    int noc_refugee_olympic_team = 0;
 
     // NOC.
     celula = analisar_celula_csv(&cursor);
@@ -146,6 +147,10 @@ int paises_com_mais_participacao() {
 
     if (strcmp(celula, "TUV") == 0) {
       noc_tuvalu = 1;
+    }
+
+    if (strcmp(celula, "ROT")) {
+      noc_refugee_olympic_team = 1;
     }
 
     // region.
@@ -162,6 +167,11 @@ int paises_com_mais_participacao() {
     // original colocou "Tuvalu" na coluna "notes" em vez da coluna "region".
     if (noc_tuvalu) {
       celula = "Tuvalu";
+    }
+
+    // Caso semelhante, só que "ROT" é o time olímpico de refugiados.
+    if (noc_refugee_olympic_team) {
+      celula = "Refugee Olympic Team";
     }
 
     strncpy(paises[paises_indice].nome_do_pais, celula, 256);
