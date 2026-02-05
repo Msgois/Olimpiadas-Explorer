@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "AcessarRegioes.c"
 #include "paises_com_mais_participacao.c"
+#include "Top_Dez_medalhistas.c"
+
+
 
 int main() {
   char questao;
@@ -27,7 +30,7 @@ int main() {
 
     return 0;
   case '4':
-    printf("4\n");
+    Top_Dez_medalhistas();
 
     return 0;
   case 'q':
