@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "AcessarRegioes.c"
 #include "paises_com_mais_participacao.c"
-#include "Top_Des_medalhistas"
+#include "Top_Dez_medalhistas.c"
+#include "evolucao_mulheres_olimpiadas.c"
 
 int main() {
   char questao;
@@ -20,7 +21,7 @@ int main() {
 
     return 0;
   case '2':
-    printf("2\n");
+    evolucao_mulheres_olimpiadas();
 
     return 0;
   case '3':

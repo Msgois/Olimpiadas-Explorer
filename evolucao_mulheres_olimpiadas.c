@@ -20,10 +20,19 @@ typedef struct {
  * como true se for verdadeiro que é Uma Mulher que participou das Olimpiadas */
 bool MulheresOlimpicas[MAXIMO_identificador];
 
-void mulheresEvolution() {
+void evolucao_mulheres_olimpiadas() {
   FILE* arquivobios = fopen("bios.csv", "r");
 
+  //O if abaixo serve para verificar se o arquivo realmente foi aberto/
+  if (arquivobios == NULL) {
+    prinf("ERRO NA LEITURA DO ARQUIVO!");
+    return 1;
+  }
+
   char linha[MAXIMO_linha];
+
+  /*Pula o cabeçalho do bios.csv*/
+  fgets(linha, sizeof(linha), arquivobios);
 
   /*Guarda o campo da determinada coluna que está sendo
 analisada*/
@@ -32,7 +41,6 @@ analisada*/
   RegistroMulheres registro[Quantidade_Edicoes];
 
   /*Laço que percorre linha por linha*/
-
   while (fgets(linha, sizeof(linha), arquivobios) != NULL) {
     /*Aqui foi criado um ponteiro para aumentar a eficiência do
    sistema e Variavéis Booleanas com o objetivo durante os
@@ -89,6 +97,52 @@ analisada*/
       }
     }
   }
-}
-fclose(arquivobios);
-/*Fechamento do bios.csv, após o mapeamento das Atletas Olimpicas.*/
+  /*Fechamento do bios.csv, após o mapeamento das Atletas Olimpicas.*/
+  fclose(arquivobios);
+
+  FILE* arquivoresults = fopen("results.csv", "r");
+
+  /*O if abaixo serve para verificar se o arquivo realmente foi aberto*/
+  if (arquivoresults == NULL) {
+    prinf("ERRO NA LEITURA DO ARQUIVO!");
+    return 1;
+  }
+
+  char linha[MAXIMO_linha];
+
+  /*Pula o cabeçalho do results.csv*/
+  fgets(linha, sizeof(linha), arquivoresults);
+
+  while (fgets(linha, sizeof(linha), arquivoresults) != NULL) {
+    /**/
+
+    int coluna = 0, controlebuffer = 0, identificador = 0, anovisualizado = 0;
+    bool isDentrodeAspas = false;
+    char* ponteiro;
+
+    /*Laço que percorre caracter por caracter de uma determinada Linha*/
+    for (ponteiro = linha; *ponteiro != '\0'; ponteiro++) {
+      /*O if abaixo foi criado com o objetivo de maniopular o arquivo bios.csv
+       * da maneira correta, pois em algumas zonas havia o uso de "" e de
+       * multiplas virgulas dentro das "", não sendo possível o uso de funções
+       * simples, como strstr ou strtok, sendo assim esse if serve para ignorar
+       * as virgulas presentes dentro de "" */
+      if (*ponteiro == '\"') {
+        isDentrodeAspas = !isDentrodeAspas;
+        continue;
+      }
+      /*O if abaixo serve pra verificar se a coluna acabou, mediante a quebra de
+       * linha ou virgula*/
+      if ((*ponteiro == ',' || *ponteiro == '\n' || *ponteiro == '\r') &&
+          !isDentrodeAspas) {
+        buffer[controlebuffer] = '\0';
+
+        /*O if abaixo serve para guardar os caracteres no buffer, formando o
+         * campo de uma determinada coluna*/
+        if (controlebuffer < (int)sizeof(buffer) - 1) {
+          buffer[controlebuffer++] = *ponteiro;
+        }  // If
+      }  // If
+    }  // for
+  }  // While
+}  // Funcao
