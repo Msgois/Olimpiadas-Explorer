@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "RakingDosPaisesPorEsporte"
+#include "RakingDosPaisesPorEsporte.c"
 #include "paises_com_mais_participacao.c"
 #include "Top_Dez_medalhistas.c"
 #include "evolucao_mulheres_olimpiadas.c"
