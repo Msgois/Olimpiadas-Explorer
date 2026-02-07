@@ -68,7 +68,38 @@ int Top_Des_medalhistas(){
     char buffer_linha[MAX_LINHA];       // Armazena cada linha lida do CSV
 
 
+    // Lê cada linha do CSV até o final do arquivo
+    while (fgets(buffer_linha, MAX_LINHA, arquivo)) {
 
-    
+        char nome_atual[100];
+        char medalha_atual[20];
+        char evento_atual[150];
+
+        // Extrai campos específicos da linha CSV
+        // Índices baseados na estrutura do arquivo:
+        extrair_campo(buffer_linha, 5, nome_atual); //  5 Nome do atleta
+        extrair_campo(buffer_linha, 4, medalha_atual); //  4  Medalha
+        extrair_campo(buffer_linha, 1, evento_atual); //  1 → Evento
+
+        // Filtro aplicado a cada linha do CSV:
+        // medalha_atual precisa ter conteúdo válido (não vazia)
+        // medalha_atual não pode ser "NA" (indicador de ausência de medalha)
+        // evento_atual deve conter "Women", garantindo que seja um evento feminino
+
+        if (strlen(medalha_atual) > 1 &&
+            strcmp(medalha_atual, "NA") != 0 &&
+            strstr(evento_atual, "Women") != NULL) {
+
+            int encontrado = 0;
+
+    // Procura se o atleta já está na lista
+            for (int i = 0; i < total_atletas; i++) {
+                if (strcmp(lista[i].nome, nome_atual) == 0) {
+                    // Se já existe, apenas incrementa a contagem de medalhas
+                    lista[i].medalhas++;
+                    encontrado = 1;
+                    break;
+                }
+            }
 
 }
