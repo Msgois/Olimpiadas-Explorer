@@ -11,22 +11,40 @@ typedef struct {
     int medalhas;
 } Atleta;
 
+// extrair_campo
+// Objetivo: Extrai um campo específico de uma linha CSV, levando em conta que campos podem estar entre aspas e conter vírgulas internas.
+// Funcionamento geral:
+// Percorre a linha caractere por caractere, identifica vírgulas que
+// realmente separam campos (desconsiderando vírgulas dentro de aspas)
+// e copia o conteúdo do campo desejado para 'destino'.
 void extrair_campo(char *linha, int indice_campo, char *destino) {
-    int campo_atual = 0;
-    int dentro_de_aspas = 0;
-    int j = 0;
+    int campo_atual = 0;  // Indica em qual campo estamos enquanto percorremos a linha
+    int dentro_de_aspas = 0; // Flag que diz se estamos dentro de aspas (0 = não, 1 = sim)
+    int j = 0; // Posição de escrita em 'destino'
 
+    // Percorre cada caractere da linha até encontrar o fim da string
     for (int i = 0; linha[i] != '\0'; i++) {
         if (linha[i] == '"') {
             dentro_de_aspas = !dentro_de_aspas;
-        } else if (linha[i] == ',' && !dentro_de_aspas) {
-            if (campo_atual == indice_campo) break;
+       
+        }
+        // Se encontrar vírgula e não estiver dentro de aspas entao ele achou separador real de campo
+        else if (linha[i] == ',' && !dentro_de_aspas) {
+            // Se já está no campo desejado, parar (campo terminou)    
+            if (campo_atual == indice_campo) {
+                break;
+            }
+            // Senão, avança para o próximo campo
             campo_atual++;
+            // Reinicia índice de escrita do destino
             j = 0;
-        } else if (campo_atual == indice_campo) {
+        }
+        // Se estamos no campo que queremos, copiar o caractere atual para 'destino'
+        else if (campo_atual == indice_campo) {
             destino[j++] = linha[i];
         }
     }
+    // Finaliza a string copiada com '\0'
     destino[j] = '\0';
 }
 
