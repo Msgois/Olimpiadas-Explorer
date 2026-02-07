@@ -50,4 +50,25 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
 
 int Top_Des_medalhistas(){
 
+ // Tenta ajustar o idioma para o português; se falhar, usa en_US
+    if (!setlocale(LC_ALL, "Portuguese")) {
+        setlocale(LC_ALL, "en_US.UTF-8");
+    }
+
+    // Abre o arquivo CSV contendo os resultados olímpicos
+    FILE *arquivo = fopen("results.csv", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return 1;
+    }
+
+    // Vetor que armazenará até 10.000 atletas
+    Atleta lista[MAX_ATLETAS];
+    int total_atletas = 0;              // Contador de atletas cadastrados
+    char buffer_linha[MAX_LINHA];       // Armazena cada linha lida do CSV
+
+
+
+    
+
 }
