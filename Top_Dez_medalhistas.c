@@ -112,5 +112,31 @@ int Top_Des_medalhistas(){
         }
     }
 
+    // Ordena os atletas por número de medalhas (ordem decrescente)
+    for (int i = 0; i < total_atletas - 1; i++) {
+        for (int j = 0; j < total_atletas - i - 1; j++) {
+            if (lista[j].medalhas < lista[j+1].medalhas) {
+                // Troca de posição (Bubble Sort)
+                Atleta temp = lista[j];
+                lista[j] = lista[j+1];
+                lista[j+1] = temp;
+            }
+        }
+    }
+
+    // Exibe as 10 atletas com mais medalhas no dataset
+    printf("\n--- TOP 10 MEDALHISTAS OLIMPICAS (FEMININO) ---\n");
+    for (int i = 0; i < 10 && i < total_atletas; i++) {
+        printf("%d. %-30s | %d medalhas\n",
+               i + 1,
+               lista[i].nome,
+               lista[i].medalhas);
+    }
+
+    // Fecha o arquivo CSV
+    fclose(arquivo);
+    return 0;
+}
+
     
 }
