@@ -88,7 +88,7 @@ char *analisar_celula_csv(char **cursor) {
 typedef struct {
   char noc[5];                  /**< National Occupational Classification. */
   char nome_do_pais[257];       /**< O nome do país. */
-  int quantidade_de_atletas;            /**< O número de atletas que competiram em nome do país. */
+  int quantidade_de_atletas;    /**< O número de atletas que competiram em nome do país. */
 } Pais;
 
 /**
@@ -149,7 +149,7 @@ int paises_com_mais_participacao() {
       noc_tuvalu = 1;
     }
 
-    if (strcmp(celula, "ROT")) {
+    if (strcmp(celula, "ROT") == 0) {
       noc_refugee_olympic_team = 1;
     }
 
@@ -218,9 +218,9 @@ int paises_com_mais_participacao() {
     }
   }
 
-  // Esporte que será pesquisado. Leia o README para a lista de esportes.
+  // Esporte que será pesquisado.
   char discipline[257];
-  printf("Escolha um esporte da lista do README:\n");
+  printf("Escolha um esporte:\n");
   scanf(" %256s", discipline);
 
   // Analisando as linhas de "results.csv" para pegar a quantidade de atletas
@@ -291,6 +291,7 @@ int paises_com_mais_participacao() {
     fprintf(data, "%d %s %d\n", i, paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
     printf("%s: %d\n", paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
   }
+
 
   FILE *gnuplot_pipe = popen("gnuplot -persist", "w");
 
