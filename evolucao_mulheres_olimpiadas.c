@@ -3,42 +3,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXIMO_linha 1200
+#define MAXIMO_linha 4096
 /*Vi que o bios.csv tem 145501 linhas, considerando q cada uma \
 corresponde a um id de atleta, coloquei 150000 de segurança*/
 #define MAXIMO_identificador 150000
-/*Foi colocado o numero 53, pois é o número exato de edições que
-ocorreram entre 1896 até 2022*/
-#define Quantidade_Edicoes 53
-
-typedef struct {
-  int quantidademulheres, ano;
-
-} RegistroMulheres;
+/*Foi colocado o numero 36, pois é o número exato dos anos que
+que houveram edições,isso entre 1896 até 2022*/
+#define Quantidade_anosolimpiadas 36
 
 /*Guarda os id das Atletas; É colocado o identificador como indice, indicando
- * como true se for verdadeiro que é Uma Mulher que participou das Olimpiadas */
+ * como true se for verdadeiro(é Uma Mulher que participou das Olimpiadas) */
 bool MulheresOlimpicas[MAXIMO_identificador];
+char linha[MAXIMO_linha];
+int i = 0, j = 0;
+int anoscontabilizados[MAXIMO_identificador];
+/*Array que contém os anos em que ocorreram as edições entre 1896 até 2022*/
+int edicoes[Quantidade_anosolimpiadas] = {
+    1896, 1900, 1904, 1908, 1912, 1920, 1924, 1928, 1932, 1936, 1948, 1952,
+    1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992, 1994, 1996,
+    1998, 2000, 2002, 2004, 2006, 2008, 2010, 2014, 2016, 2018, 2020, 2022};
+/*Array que irá conter a quantidade de mulheres por ano*/
+int quantidademulheres[Quantidade_anosolimpiadas] = {0};
+/*Guarda o campo da determinada coluna que está sendo
+analisada*/
+char buffer[256];
 
-void evolucao_mulheres_olimpiadas() {
+int evolucao_mulheres_olimpiadas() {
   FILE* arquivobios = fopen("bios.csv", "r");
 
-  //O if abaixo serve para verificar se o arquivo realmente foi aberto/
+  // O if abaixo serve para verificar se o arquivo realmente foi aberto/
   if (arquivobios == NULL) {
-    prinf("ERRO NA LEITURA DO ARQUIVO!");
+    printf("ERRO NA LEITURA DO ARQUIVO!");
     return 1;
   }
 
-  char linha[MAXIMO_linha];
-
   /*Pula o cabeçalho do bios.csv*/
   fgets(linha, sizeof(linha), arquivobios);
-
-  /*Guarda o campo da determinada coluna que está sendo
-analisada*/
-  char buffer[256];
-
-  RegistroMulheres registro[Quantidade_Edicoes];
 
   /*Laço que percorre linha por linha*/
   while (fgets(linha, sizeof(linha), arquivobios) != NULL) {
@@ -104,21 +104,20 @@ analisada*/
 
   /*O if abaixo serve para verificar se o arquivo realmente foi aberto*/
   if (arquivoresults == NULL) {
-    prinf("ERRO NA LEITURA DO ARQUIVO!");
+    printf("ERRO NA LEITURA DO ARQUIVO!");
     return 1;
   }
-
-  char linha[MAXIMO_linha];
 
   /*Pula o cabeçalho do results.csv*/
   fgets(linha, sizeof(linha), arquivoresults);
 
   while (fgets(linha, sizeof(linha), arquivoresults) != NULL) {
-    /**/
-
     int coluna = 0, controlebuffer = 0, identificador = 0, anovisualizado = 0;
     bool isDentrodeAspas = false;
     char* ponteiro;
+    /*O tamanho da String é 5 pois o ano é feito de 4 char, mas precisamos
+     * colocar o \0 no final para indicar o fim da string*/
+    char copiaAnovisualizado[5];
 
     /*Laço que percorre caracter por caracter de uma determinada Linha*/
     for (ponteiro = linha; *ponteiro != '\0'; ponteiro++) {
@@ -136,13 +135,56 @@ analisada*/
       if ((*ponteiro == ',' || *ponteiro == '\n' || *ponteiro == '\r') &&
           !isDentrodeAspas) {
         buffer[controlebuffer] = '\0';
-
-        /*O if abaixo serve para guardar os caracteres no buffer, formando o
-         * campo de uma determinada coluna*/
-        if (controlebuffer < (int)sizeof(buffer) - 1) {
-          buffer[controlebuffer++] = *ponteiro;
-        }  // If
-      }  // If
-    }  // for
-  }  // While
-}  // Funcao
+        /*o if abaixo tem o objetivo de verificar se a coluna é a 0, se sim, os
+         * 4 primeiros caracteres da coluna 0, ou seja, o ano, sejam copiados
+         * para dentro de uma nova string, após isso é adicionado \0 para
+         * indicar o fim da string, tal string é convertida em numero inteiro e
+         * armazenada na variavél ano visualizado, que servirá futuramente para
+         * verificar se uma determinada atleta já foi devidamente somada a 1 ano
+         * em qual ela participou*/
+        if (coluna == 0) {
+          strncpy(copiaAnovisualizado, buffer, 4);
+          copiaAnovisualizado[4] = '\0';
+          anovisualizado = atoi(copiaAnovisualizado);
+          /*Guarda o id do/a Atleta*/
+        } else if (coluna == 6) {
+          identificador = atoi(buffer);
+          break;
+        }
+        coluna++;
+        controlebuffer = 0;
+        continue;
+      }
+      if (controlebuffer < (int)sizeof(buffer) - 1) {
+        buffer[controlebuffer++] = *ponteiro;
+      }
+    }
+    /*A estrutura abaixo faz o seguinte:
+    -Verifica se o id guardado é de uma mulher, por meio do Array de booleanos
+    MulheresOlimpicas
+    -Ao confirmar a situação anterior,é verificado se o
+    anovisualizado é diferente do ultimo ano contabilzado por esse id, para que
+    não haja repetições
+    -Ao confirmar a situação anterior, o laço de repetição juntamente com a
+    estrutura condicional presente no seu interior, faz o match entre o
+    anovisualizado e sua respectiva posição no array edicoes, soma-se +1 na
+    quantidade de mulheres e por fim, de acordo com a respectiva posição é
+    atualizado o array de anoscontabilizados do determinado id*/
+    if (MulheresOlimpicas[identificador]) {
+      if (anovisualizado != anoscontabilizados[identificador]) {
+        for (i = 0; i < Quantidade_anosolimpiadas; i++) {
+          if (anovisualizado == edicoes[i]) {
+            quantidademulheres[i]++;
+            anoscontabilizados[identificador] = anovisualizado;
+            break;
+          }
+        }
+      }
+    }
+  }
+  fclose(arquivoresults);
+  /*Fim da Função*/
+  for (i = 0; i < Quantidade_anosolimpiadas; i++) {
+    printf("%d:%d\n", edicoes[i], quantidademulheres[i]);
+  }
+}
