@@ -102,4 +102,15 @@ int Top_Des_medalhistas(){
                 }
             }
 
+            if (!encontrado && total_atletas < MAX_ATLETAS) {   // Se o atleta ainda não está na lista e ainda há espaço disponível
+                strcpy(lista[total_atletas].nome, nome_atual);  // Copia o nome do atleta para a nova posição da lista
+                lista[total_atletas].medalhas = 1;              // Inicializa a contagem de medalhas desse atleta com 1
+                total_atletas++;                                // Avança o total de atletas cadastrados
+            }
+
+
+        }
+    }
+
+    
 }
