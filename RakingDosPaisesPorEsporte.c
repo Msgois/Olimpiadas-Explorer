@@ -18,14 +18,14 @@ void AcessarRegioes (RankigDosPaises listaDosPaises [], int *TotalDePaises) {
     if (arquivoRegioes == NULL) { // Se o retorno que o ponteiro receber for = NULL isso quer dizer que deu um erro ao tentar abrir o arquivo, por isso coloquei um aviso para eu ficar ciente se consegui ou não.
         printf ("Erro ao abrir o arquivo");
         return;
-    } 
-        
+    }
+
     char linha [300]; // Crie a variável "linha" do tipo char, ela vai armazenar todo o caractere de todas linhas. linha por linha do arquivo regions, como a quantidade de caractere varia, coloquei um tamanho que garanta que não vou deixar passar nenhum em branco. Eu vou usar ela para achar o NOC e associar a região de um paise qualquer, para depois adcionar na variavel "TotalDepaises".
 
     fgets (linha, sizeof linha, arquivoRegioes); // Como a função fgets serve como um scanf somente para strings fiz o seguinte: no primeiro argumento usei "linha" que vai ser ocupado pela entrada "arquivoRegiõs" (terceiro argumento) que aponta para o arquivo regions. Fiz essa inicialização antes do While para descartar a primeira linha do regions.
 
     while (fgets(linha, sizeof linha, arquivoRegioes)) {
-        char *BuscarMembro = strtok (linha, ","); // Criei um ponteiro chamado "BuscarMembro" para guardar o endereço de memória do NOCe regiao que vai ser retornado pela função "strtok" que descarta os caracteres a partir do segundo argumento. 
+        char *BuscarMembro = strtok (linha, ","); // Criei um ponteiro chamado "BuscarMembro" para guardar o endereço de memória do NOCe regiao que vai ser retornado pela função "strtok" que descarta os caracteres a partir do segundo argumento.
             if (BuscarMembro != NULL) {
                 strcpy (listaDosPaises [*TotalDePaises].NationalOlympicCommittee, BuscarMembro); // A função "strcpy" que vem da biblioteca de string me permite copiar a string do segundo argumento para o primeiro. Eu coloquei no priemiro argumento a  minha "lista de paises" usando como indice o "Total de paises" que seria o 0 para armazenar no NOC da struct desse índice.
             }
@@ -50,15 +50,15 @@ void ContarMedalhas (RankigDosPaises listaDosPaises [], int *TotalDePaises, char
         if (arquivoResults == NULL) {
             printf ("ERRO! Arquivo não foi aberto");
             return;
-        } 
+        }
 
-    
+
     char linha [1200];
     char *Descarte;
     char *BuscarEsporte;
     char *BuscarNOC;
     char *BuscarMedalha;
-    
+
     fgets (linha, sizeof linha, arquivoResults);
 
     while (fgets (linha, sizeof linha, arquivoResults)) {
@@ -115,9 +115,9 @@ printf("\n--- RANKING DE PAISES POR MEDALHA: %s ---\n\n", esporte);
 
 for (int k = 0; k < *TotalDePaises; k++) {
     if (listaDosPaises[k].medalhas > 0) {
-        printf("%d. %s (%s) - Medalhas: %d\n", k + 1, 
-                listaDosPaises[k].regiao, 
-                listaDosPaises[k].NationalOlympicCommittee, 
+        printf("%d. %s (%s) - Medalhas: %d\n", k + 1,
+                listaDosPaises[k].regiao,
+                listaDosPaises[k].NationalOlympicCommittee,
                 listaDosPaises[k].medalhas);
         }
     }
@@ -142,6 +142,3 @@ int main () {
     ContarMedalhas (listaDosPaises, &TotalDePaises, esporte);
 
 }
-
-
-
