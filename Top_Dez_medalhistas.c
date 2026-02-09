@@ -26,11 +26,11 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
     for (int i = 0; linha[i] != '\0'; i++) {
         if (linha[i] == '"') {
             dentro_de_aspas = !dentro_de_aspas;
-       
+
         }
         // Se encontrar vírgula e não estiver dentro de aspas entao ele achou separador real de campo
         else if (linha[i] == ',' && !dentro_de_aspas) {
-            // Se já está no campo desejado, parar (campo terminou)    
+            // Se já está no campo desejado, parar (campo terminou)
             if (campo_atual == indice_campo) {
                 break;
             }
@@ -136,7 +136,4 @@ int Top_Des_medalhistas(){
     // Fecha o arquivo CSV
     fclose(arquivo);
     return 0;
-}
-
-    
 }

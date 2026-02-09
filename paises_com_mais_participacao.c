@@ -5,7 +5,7 @@
 
 #define NOC_REGIONS_LINHAS 231
 #define RESULTS_LINHAS 308409
-#define TAMANH_MAXIMO_DE_LINHA 2048
+#define TAMANHO_MAXIMO_DE_LINHA 2048
 
 /**
  * @brief Função para ler uma string cercada por aspas dentro de um CSV.
@@ -126,7 +126,7 @@ int paises_com_mais_participacao() {
   }
 
   Pais paises[NOC_REGIONS_LINHAS];
-  char linha[TAMANH_MAXIMO_DE_LINHA];
+  char linha[TAMANHO_MAXIMO_DE_LINHA];
   int paises_indice = 0;
 
   // Pula o cabeçalho.
@@ -292,7 +292,6 @@ int paises_com_mais_participacao() {
     printf("%s: %d\n", paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
   }
 
-
   FILE *gnuplot_pipe = popen("gnuplot -persist", "w");
 
   if (!gnuplot_pipe) {
@@ -312,7 +311,7 @@ int paises_com_mais_participacao() {
           discipline);
   fprintf(gnuplot_pipe, "set boxwidth 0.5\n");
   fprintf(gnuplot_pipe, "set style fill solid\n");
-  // Prevents overlapping issues with the labels.
+  // Faz com que os nomes dos países não se sobreponham.
   fprintf(gnuplot_pipe, "set xtics rotate by -45\n");
   fprintf(gnuplot_pipe, "plot 'data.dat' using 1:3:xtic(2) ti 'Atletas' with boxes\n");
 
