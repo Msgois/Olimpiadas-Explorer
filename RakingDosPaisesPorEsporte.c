@@ -209,7 +209,7 @@ for (int k = 0; k < *TotalDePaises; k++) {
 }
 
 
-int main () {
+int RakingDosPaisesPorEsporte () {
 
 // Aplicação das funções.
 
