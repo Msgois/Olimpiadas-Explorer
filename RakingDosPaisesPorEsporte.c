@@ -145,15 +145,10 @@ void ContarMedalhas (RankigDosPaises listaDosPaises [], int *TotalDePaises, char
 // Se for a coluna do esporte, o ponteiro "BuscarEsporte" vai receber início.
 // Se for a coluna do NOC, o ponteiro "BuscarNOC" vai receber início.
 // Se for a coluna da medalha, o ponteiro "BuscarMedalha" vai receber início.
-// Também chamei a "strspn" para tirar a quebra de linha, já que é a última coluna.
-
-            if (coluna == 3) BuscarEsporte = inicio;
-            if (coluna == 7) BuscarNOC = inicio;
-            if (coluna == 11) {
-                BuscarMedalha = inicio;
-                BuscarMedalha[strcspn(BuscarMedalha, "\n\r")] = 0;
-            }
-
+            if (coluna == 9) BuscarEsporte = inicio;
+            if (coluna == 8) BuscarNOC = inicio;
+            if (coluna == 5) BuscarMedalha = inicio;
+                
 // Se fim receber NULL é pq chegou ao fim da linha então acaba por aí.
             if (fim == NULL) break;
 
@@ -167,7 +162,7 @@ void ContarMedalhas (RankigDosPaises listaDosPaises [], int *TotalDePaises, char
 // Eu fiz assim pq percebi que toda linha que possui alguma medalha o tamanho da coluna é maior que zero.
 // Se não tiver medlha o tamanho é 0. Vai ter só um \0 já que removi o enter algumas linha de cod atrás.
 // Verificando que possui medalhas, criei um for que vai usar como parametro o Total de paises para navegar pela lista de paises.
-// O proximo if verifica se o NOC da coluna 7 coincidir com o membro NOC da struct da listaDosPaises do indice atual
+// O proximo if verifica se o NOC da coluna 8 coincidir com o membro NOC da struct da listaDosPaises do indice atual
 // Vai ser somado + 1 no membro de medalhas da struct de mesmo indice.
             if (strcmp (BuscarEsporte, esporte) == 0) {
                 if (strcmp (BuscarMedalha, "NA") != 0 && strlen (BuscarMedalha) > 0) {
