@@ -125,7 +125,8 @@ void ContarMedalhas (RankigDosPaises listaDosPaises [], int *TotalDePaises, char
 // Depois uso outro if para o ponteiro fim receber o endereço da proxima vírgula a partir da posição seguinte da aspas.
             if (*inicio == '\"') {
                 fim = strchr (inicio + 1, '\"');
-                if (fim) {                   
+                if (fim) {  
+                    *fim = '\0';
                     fim = strchr (fim + 1, ',');
                 }
             } 
