@@ -1,4 +1,3 @@
-#include <search.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -193,31 +192,6 @@ int paises_com_mais_participacao() {
     return 1;
   }
 
-  // POSIX define o header search.h para hash tables em C. É meio chatinho de
-  // usar, mas serve. Veja hsearch(3) para mais detalhas (ou só use esse link:
-  // <https://linux.die.net/man/3/hsearch>.)
-  // Eu peguei a ideia aqui.
-  //
-  // Criando uma hash table para países. Contém pares "NOC-Atletas".
-  ENTRY nocs_atletas;
-  ENTRY *nocs_atletas_ponteiro;
-
-  hcreate(NOC_REGIONS_LINHAS);
-
-  // Inicializando a hash table.
-  for (int i = 0; i < NOC_REGIONS_LINHAS - 2; i++) {
-    nocs_atletas.key = paises[i].noc;
-    nocs_atletas.data = 0;
-
-    nocs_atletas_ponteiro = hsearch(nocs_atletas, ENTER);
-
-    if (!nocs_atletas_ponteiro) {
-      perror("Entrada falhou");
-
-      return 1;
-    }
-  }
-
   // Esporte que será pesquisado.
   char discipline[257];
   printf("Escolha um esporte:\n");
@@ -227,16 +201,14 @@ int paises_com_mais_participacao() {
   // que participaram no dado esporte.
   while (fgets(linha, sizeof(linha), results) && paises_indice < RESULTS_LINHAS) {
     char *cursor = linha;
-    ENTRY celula;
-    ENTRY *celula_ponteiro;
 
     // Pula as primeiras sete colunas pois não precisamos delas.
     for (int i = 0; i < 7; i++) {
       analisar_celula_csv(&cursor);
     }
 
-    // NOC.
-    celula.key = analisar_celula_csv(&cursor);
+    // NOC (país).
+    char *celula_noc = analisar_celula_csv(&cursor);
 
     // discipline (esporte).
     char *celula_discipline = analisar_celula_csv(&cursor);
@@ -246,29 +218,10 @@ int paises_com_mais_participacao() {
       continue;
     }
 
-    celula_ponteiro = hsearch(celula, FIND);
-
-    // Incrementando o número de atletas NA HASH TABLE. Mais tarde, modificamos
-    // o array de structs.
-    if (celula_ponteiro) {
-      celula_ponteiro->data++;
-    }
-  }
-
-  // Agora, você deve estar perguntando: "Por que isso foi feito? Por que usar
-  // uma hash table? Não dava para só pegar o NOC e depois fazer um loop pelo
-  // array de países?". Bem, eu tentei fazer isso, mas o programa rodou
-  // significantemente mais lento. Isso funciona melhor. Mas deve ter um jeito
-  // mais fácil de fazer isso sem usar uma ferramenta POSIX obscura.
-  for (int i = 0; i < paises_indice; i++) {
-    ENTRY pais;
-    pais.key = paises[i].noc;
-    ENTRY *pais_ponteiro = hsearch(pais, FIND);
-
-    if (pais_ponteiro) {
-      // data é de tipo "void *". Se uma conversão não for feita, o compilador
-      // reclama (sem conversão dá um erro, conversão direta para int dá um aviso).
-      paises[i].quantidade_de_atletas = (int)(long)pais_ponteiro->data;
+    for (int i = 0; i < paises_indice; i++) {
+      if (strcmp(celula_noc, paises[i].noc) == 0) {
+        paises[i].quantidade_de_atletas++;
+      }
     }
   }
 
@@ -289,7 +242,7 @@ int paises_com_mais_participacao() {
   printf("\n");
   for (int i = 0; i < 10; i++) {
     fprintf(data, "%d %s %d\n", i, paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
-    printf("%s: %d\n", paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
+    printf("%02d. %s: %d\n", i + 1, paises[i].nome_do_pais, paises[i].quantidade_de_atletas);
   }
 
   FILE *gnuplot_pipe = popen("gnuplot -persist", "w");
@@ -315,7 +268,6 @@ int paises_com_mais_participacao() {
   fprintf(gnuplot_pipe, "set xtics rotate by -45\n");
   fprintf(gnuplot_pipe, "plot 'data.dat' using 1:3:xtic(2) ti 'Atletas' with boxes\n");
 
-  hdestroy();
   fclose(noc_regions);
   fclose(results);
   fclose(data);
