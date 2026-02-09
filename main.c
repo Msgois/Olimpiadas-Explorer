@@ -17,7 +17,7 @@ int main() {
 
   switch (questao) {
   case '1':
-    AcessarRegioes();
+    RakingDosPaisesPorEsporte();
 
     return 0;
   case '2':
