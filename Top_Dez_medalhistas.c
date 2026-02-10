@@ -26,11 +26,11 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
     for (int i = 0; linha[i] != '\0'; i++) {
         if (linha[i] == '"') {
             dentro_de_aspas = !dentro_de_aspas;
-
+       
         }
         // Se encontrar vírgula e não estiver dentro de aspas entao ele achou separador real de campo
         else if (linha[i] == ',' && !dentro_de_aspas) {
-            // Se já está no campo desejado, parar (campo terminou)
+            // Se já está no campo desejado, parar (campo terminou)    
             if (campo_atual == indice_campo) {
                 break;
             }
@@ -48,7 +48,7 @@ void extrair_campo(char *linha, int indice_campo, char *destino) {
     destino[j] = '\0';
 }
 
-int Top_Des_medalhistas(){
+int Top_Dez_medalhistas(){
 
  // Tenta ajustar o idioma para o português; se falhar, usa en_US
     if (!setlocale(LC_ALL, "Portuguese")) {
@@ -68,15 +68,6 @@ int Top_Des_medalhistas(){
     char buffer_linha[MAX_LINHA];       // Armazena cada linha lida do CSV
 
 
-    
-    // Vetores para contagem de mulheres por edição (por ano)
-    
-    int edicoes[200];
-    int quant_mulheres[200];
-    int total_edicoes = 0;
-    
-
-
     // Lê cada linha do CSV até o final do arquivo
     while (fgets(buffer_linha, MAX_LINHA, arquivo)) {
 
@@ -90,12 +81,6 @@ int Top_Des_medalhistas(){
         extrair_campo(buffer_linha, 4, medalha_atual); //  4  Medalha
         extrair_campo(buffer_linha, 1, evento_atual); //  1 → Evento
 
-        
-        //  Extrae o ano do final do nome do evento
-        
-        int ano = atoi(evento_atual + strlen(evento_atual) - 4);
-       
-
         // Filtro aplicado a cada linha do CSV:
         // medalha_atual precisa ter conteúdo válido (não vazia)
         // medalha_atual não pode ser "NA" (indicador de ausência de medalha)
@@ -107,7 +92,7 @@ int Top_Des_medalhistas(){
 
             int encontrado = 0;
 
-            // Procura se o atleta já está na lista
+    // Procura se o atleta já está na lista
             for (int i = 0; i < total_atletas; i++) {
                 if (strcmp(lista[i].nome, nome_atual) == 0) {
                     // Se já existe, apenas incrementa a contagem de medalhas
@@ -119,34 +104,15 @@ int Top_Des_medalhistas(){
 
             if (!encontrado && total_atletas < MAX_ATLETAS) {   // Se o atleta ainda não está na lista e ainda há espaço disponível
                 strcpy(lista[total_atletas].nome, nome_atual);  // Copia o nome do atleta para a nova posição da lista
-                lista[total_atletas].medalhas = 1;              // Inicializa a contagem de medalhas desse atleta com 1
-                total_atletas++;                                // Avança o total de atletas cadastrados
+                lista[total_atletas].medalhas = 1; // Inicializa a contagem de medalhas desse atleta com 1
+                total_atletas++; // Avança o total de atletas cadastrados
             }
 
-
-            
-            // REGISTRO DE MULHERES POR ANO
-            
-            int idx = -1;
-            for (int i = 0; i < total_edicoes; i++) {
-                if (edicoes[i] == ano) {
-                    idx = i;
-                    break;
-                }
-            }
-
-            if (idx == -1) {  
-                edicoes[total_edicoes] = ano;
-                quant_mulheres[total_edicoes] = 1;
-                total_edicoes++;
-            } else {
-                quant_mulheres[idx]++;
-            }
-            
 
         }
     }
-
+    // Fecha o arquivo CSV
+    fclose(arquivo);
     // Ordena os atletas por número de medalhas (ordem decrescente)
     for (int i = 0; i < total_atletas - 1; i++) {
         for (int j = 0; j < total_atletas - i - 1; j++) {
@@ -168,44 +134,36 @@ int Top_Des_medalhistas(){
                lista[i].medalhas);
     }
 
+
+   // GERAÇÃO DO GRÁFICO (GNUPLOT) 
     
-    // Gera arquivo dados.txt para o grafico
-    FILE *arquivodados = fopen("dados.txt", "w");
-    if (arquivodados) {
-        for (int i = 0; i < total_edicoes; i++) {
-            fprintf(arquivodados, "%d %d\n", edicoes[i], quant_mulheres[i]);
+    // Abre o arquivo para escrita dos dados que o Gnuplot vai ler
+    FILE *dadosGrafico = fopen("dados_plot.txt", "w"); 
+    if (dadosGrafico != NULL) {
+        for (int i = 0; i < 10 && i < total_atletas; i++) {
+            // Salva "Nome" e Valor no arquivo para o Gnuplot processar
+            fprintf(dadosGrafico, "\"%s\" %d\n", lista[i].nome, lista[i].medalhas);
         }
-        fclose(arquivodados);
+        fclose(dadosGrafico); // Fecha o arquivo de texto após gravar os dados
     }
 
-    
-    // Gera script do gnuplot
-    
-    FILE *f_script = fopen("script_evolucao_mulheres.gp", "w");
-    if (f_script) {
-
-        fprintf(f_script, "set title \"Evolucao da Participacao Feminina nas Olimpiadas\"\n");
-        fprintf(f_script, "set xlabel \"Ano\"\n");
-        fprintf(f_script, "set ylabel \"Quantidade\"\n");
-        fprintf(f_script, "set grid y\n");
-
-        // Gráfico de barras
-        fprintf(f_script, "set style fill solid 0.5 border -1\n");
-        fprintf(f_script, "set boxwidth 0.8 relative\n");
-        fprintf(f_script, "set xtics rotate by -45\n");
-
-        fprintf(f_script, "plot \"dados.txt\" using 1:2 with boxes title \"Mulheres\" lc rgb \"blue\"\n");
-        fclose(f_script);
+    // Abre o pipe (túnel de comunicação) com o executável do Gnuplot
+    FILE *gnuplotPipe = popen("gnuplot -p", "w"); 
+    if (gnuplotPipe) {
+        fprintf(gnuplotPipe, "set title 'Top 10 Medalhistas'\n"); // Define o título do gráfico
+        fprintf(gnuplotPipe, "set encoding utf8\n"); // Tenta corrigir acentos (UTF-8)
+        fprintf(gnuplotPipe, "set style fill solid\n"); // Deixa as barras com cor sólida
+        fprintf(gnuplotPipe, "set boxwidth 0.5\n"); // Ajusta a largura das barras
+        fprintf(gnuplotPipe, "set ylabel 'Medalhas'\n"); // Nomeia o eixo vertical
+        fprintf(gnuplotPipe, "set yrange [0:*]\n"); // Garante que o gráfico comece no ZERO
+        fprintf(gnuplotPipe, "set xtics rotate by -45\n");  // Inclina os nomes para não sobrepor
+        fprintf(gnuplotPipe, "set grid y\n");  // Cria linhas horizontais de fundo
+        // liga os dados ao gráfico: col 2 (Y), col 1 (nomes no X)
+        fprintf(gnuplotPipe, "plot 'dados_plot.txt' using 2:xtic(1) with boxes title 'Medalhas' lc rgb 'purple'\n");
+        pclose(gnuplotPipe); // Fecha o túnel de comandos (o gráfico persiste pela flag -p)
     }
 
-    printf("\nGerando grafico... Aguarde.\n");
-
-    
-    //Abre o grafico altomaticamente
-    
-    system("gnuplot -persist script_evolucao_mulheres.gp");
-
-    // Fecha o arquivo CSV
-    fclose(arquivo);
     return 0;
 }
+
+    
