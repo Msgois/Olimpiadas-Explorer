@@ -222,7 +222,71 @@ int RakingDosPaisesPorEsporte () {
 
     ContarMedalhas (listaDosPaises, &TotalDePaises, esporte);
 
+       // 1. GERAÇÃO DO ARQUIVO .TXT DO RANKING
+    // ==========================================================
+    FILE *f_txt = fopen("ranking_final.txt", "w");
+    if (f_txt != NULL) {
+        fprintf(f_txt, "--- RANKING DE PAISES: %s ---\n\n", esporte);
+        int pos = 1;
+        for (int i = 0; i < TotalDePaises; i++) {
+            if (listaDosPaises[i].medalhas > 0) {
+                fprintf(f_txt, "%d. %s (%s) - Medalhas: %d\n", 
+                        pos++, listaDosPaises[i].regiao, 
+                        listaDosPaises[i].NationalOlympicCommittee, 
+                        listaDosPaises[i].medalhas);
+            }
+        }
+        fclose(f_txt);
+        printf("\nFicheiro 'ranking_final.txt' gerado com sucesso.\n");
+    }
+
+    
+    // 2. GERAÇÃO DO GRÁFICO TOTAL (VIA PIPE/POPEN)
+    
+    // Primeiro, cria o ficheiro de dados temporário para o Gnuplot
+    FILE *f_dados = fopen("dados_grafico.dat", "w");
+    int medalhistas = 0;
+    if (f_dados != NULL) {
+        for (int i = 0; i < TotalDePaises; i++) {
+            if (listaDosPaises[i].medalhas > 0) {
+                // Salva: NOC Medalhas
+                fprintf(f_dados, "%s %d\n", listaDosPaises[i].NationalOlympicCommittee, listaDosPaises[i].medalhas);
+                medalhistas++;
+            }
+        }
+        fclose(f_dados);
+    }
+
+    // Se houver medalhistas, envia para o Gnuplot
+    if (medalhistas > 0) {
+        // No Windows, se "popen" falhar, tente "_popen"
+        FILE *gnuplot_pipe = popen("gnuplot -persist", "w");
+        if (gnuplot_pipe) {
+            fprintf(gnuplot_pipe, "set title 'Ranking de Medalhas: %s'\n", esporte);
+            fprintf(gnuplot_pipe, "set ylabel 'Total de Medalhas'\n");
+            fprintf(gnuplot_pipe, "set grid y\n");
+            fprintf(gnuplot_pipe, "set style fill solid 0.6 border -1\n");
+            
+            // Rotaciona os nomes dos países para não amontoar
+            fprintf(gnuplot_pipe, "set xtics rotate by -45\n");
+            
+            // Configura o terminal para abrir janela no Windows
+            fprintf(gnuplot_pipe, "set term windows enhanced\n");
+
+            // Plota: Coluna 2 (medalhas) e xtic(1) (NOC)
+            fprintf(gnuplot_pipe, "plot 'dados_grafico.dat' using 2:xtic(1) with boxes title 'Medalhas' lc rgb 'blue'\n");
+            
+            pclose(gnuplot_pipe);
+            printf("Grafico gerado com %d paises.\n", medalhistas);
+        } else {
+            printf("Erro: Gnuplot nao encontrado no PATH.\n");
+        }
+    }
+
+    return 0;
 }
+
+
 
 
 
