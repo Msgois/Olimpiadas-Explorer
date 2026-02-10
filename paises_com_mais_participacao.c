@@ -257,8 +257,6 @@ int paises_com_mais_participacao() {
   // <https://stackoverflow.com/questions/327576/how-do-you-plot-bar-charts-in-gnuplot>
   // e
   // <https://gist.github.com/arosenb4/ab627b80035ca2e7bbf4ce9b39de4910>.
-  fprintf(gnuplot_pipe, "set term pngcairo\n");
-  fprintf(gnuplot_pipe, "set output 'graph.png'\n");
   fprintf(gnuplot_pipe,
           "set title 'Top 10 Países com mais jogadores de %s (nomes dos países em inglês)'\n",
           discipline);
