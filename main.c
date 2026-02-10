@@ -29,7 +29,7 @@ int main() {
 
     return 0;
   case '4':
-    Top_Des_medalhistas();
+    Top_Dez_medalhistas();
 
     return 0;
   case 'q':
