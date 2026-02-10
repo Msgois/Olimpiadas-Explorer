@@ -94,7 +94,7 @@ int Top_Des_medalhistas(){
         //  Extrae o ano do final do nome do evento
         
         int ano = atoi(evento_atual + strlen(evento_atual) - 4);
-        // ---------------------------------------------------------
+       
 
         // Filtro aplicado a cada linha do CSV:
         // medalha_atual precisa ter conteúdo válido (não vazia)
