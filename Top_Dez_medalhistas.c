@@ -79,7 +79,7 @@ int Top_Dez_medalhistas(){
         // Índices baseados na estrutura do arquivo:
         extrair_campo(buffer_linha, 5, nome_atual); //  5 Nome do atleta
         extrair_campo(buffer_linha, 4, medalha_atual); //  4  Medalha
-        extrair_campo(buffer_linha, 1, evento_atual); //  1 → Evento
+        extrair_campo(buffer_linha, 1, evento_atual); //  1  Evento
 
         // Filtro aplicado a cada linha do CSV:
         // medalha_atual precisa ter conteúdo válido (não vazia)
