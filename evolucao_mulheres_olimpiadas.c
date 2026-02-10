@@ -111,6 +111,7 @@ int evolucao_mulheres_olimpiadas() {
   /*Pula o cabeçalho do results.csv*/
   fgets(linha, sizeof(linha), arquivoresults);
 
+  /*Laço que percorre linha por linha*/
   while (fgets(linha, sizeof(linha), arquivoresults) != NULL) {
     int coluna = 0, controlebuffer = 0, identificador = 0, anovisualizado = 0;
     bool isDentrodeAspas = false;
@@ -183,8 +184,41 @@ int evolucao_mulheres_olimpiadas() {
     }
   }
   fclose(arquivoresults);
-  /*Fim da Função*/
+  
+  //LEITURA DA QUANTIDADE DE MULHERES POR ANO
   for (i = 0; i < Quantidade_anosolimpiadas; i++) {
-    printf("%d:%d\n", edicoes[i], quantidademulheres[i]);
+    printf("%d: %d\n", edicoes[i], quantidademulheres[i]);
   }
+//CRIAÇÃO E PREENCHIMENTO DE UM ARQUIVO TXT 
+  FILE *arquivodados = fopen("dados.txt", "w");
+    if (arquivodados) {
+        for (i = 0; i < Quantidade_anosolimpiadas; i++) {
+            fprintf(arquivodados, "%d %d\n", edicoes[i], quantidademulheres[i]);
+        }
+        fclose(arquivodados);
+    }
+
+    // CRIAÇÃO DO ARQUIVO SCRIPT DO GNUPLOT
+    FILE *f_script = fopen("script_evolucao_mulheres.gp", "w");
+    if (f_script) {
+      
+        fprintf(f_script, "set title \"Evolucao da Participacao Feminina nas Olimpiadas\"\n");
+        fprintf(f_script, "set xlabel \"Ano\"\n");
+        fprintf(f_script, "set ylabel \"Quantidade\"\n");
+        fprintf(f_script, "set grid y\n");
+        
+        //CONFIG PARA UM GRÁFICO DE BARRAS
+        fprintf(f_script, "set style fill solid 0.5 border -1\n");
+        fprintf(f_script, "set boxwidth 0.8 relative\n");
+        fprintf(f_script, "set xtics rotate by -45\n");
+        
+        //PLOT
+        fprintf(f_script, "plot \"dados.txt\" using 1:2 with boxes title \"Mulheres\" lc rgb \"blue\"\n");
+        fclose(f_script);
+    }
+
+    printf("\nGerando grafico... Aguarde.\n");
+    //ABERTURA AUTOMATICA DO GRÁFICO
+    system("gnuplot -persist script_evolucao_mulheres.gp");
+  /*Fim da Função*/
 }

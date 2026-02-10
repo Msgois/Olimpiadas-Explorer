@@ -60,3 +60,5 @@ dkms.conf
 # Gnuplot
 *.dat
 *.png
+*.txt
+*.gp
