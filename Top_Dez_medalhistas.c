@@ -68,6 +68,15 @@ int Top_Des_medalhistas(){
     char buffer_linha[MAX_LINHA];       // Armazena cada linha lida do CSV
 
 
+    
+    // Vetores para contagem de mulheres por edição (por ano)
+    
+    int edicoes[200];
+    int quant_mulheres[200];
+    int total_edicoes = 0;
+    
+
+
     // Lê cada linha do CSV até o final do arquivo
     while (fgets(buffer_linha, MAX_LINHA, arquivo)) {
 
@@ -81,6 +90,12 @@ int Top_Des_medalhistas(){
         extrair_campo(buffer_linha, 4, medalha_atual); //  4  Medalha
         extrair_campo(buffer_linha, 1, evento_atual); //  1 → Evento
 
+        
+        //  Extrae o ano do final do nome do evento
+        
+        int ano = atoi(evento_atual + strlen(evento_atual) - 4);
+        // ---------------------------------------------------------
+
         // Filtro aplicado a cada linha do CSV:
         // medalha_atual precisa ter conteúdo válido (não vazia)
         // medalha_atual não pode ser "NA" (indicador de ausência de medalha)
@@ -92,7 +107,7 @@ int Top_Des_medalhistas(){
 
             int encontrado = 0;
 
-    // Procura se o atleta já está na lista
+            // Procura se o atleta já está na lista
             for (int i = 0; i < total_atletas; i++) {
                 if (strcmp(lista[i].nome, nome_atual) == 0) {
                     // Se já existe, apenas incrementa a contagem de medalhas
@@ -108,6 +123,26 @@ int Top_Des_medalhistas(){
                 total_atletas++;                                // Avança o total de atletas cadastrados
             }
 
+
+            
+            // REGISTRO DE MULHERES POR ANO
+            
+            int idx = -1;
+            for (int i = 0; i < total_edicoes; i++) {
+                if (edicoes[i] == ano) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            if (idx == -1) {  
+                edicoes[total_edicoes] = ano;
+                quant_mulheres[total_edicoes] = 1;
+                total_edicoes++;
+            } else {
+                quant_mulheres[idx]++;
+            }
+            
 
         }
     }
@@ -132,6 +167,43 @@ int Top_Des_medalhistas(){
                lista[i].nome,
                lista[i].medalhas);
     }
+
+    
+    // Gera arquivo dados.txt para o grafico
+    FILE *arquivodados = fopen("dados.txt", "w");
+    if (arquivodados) {
+        for (int i = 0; i < total_edicoes; i++) {
+            fprintf(arquivodados, "%d %d\n", edicoes[i], quant_mulheres[i]);
+        }
+        fclose(arquivodados);
+    }
+
+    
+    // Gera script do gnuplot
+    
+    FILE *f_script = fopen("script_evolucao_mulheres.gp", "w");
+    if (f_script) {
+
+        fprintf(f_script, "set title \"Evolucao da Participacao Feminina nas Olimpiadas\"\n");
+        fprintf(f_script, "set xlabel \"Ano\"\n");
+        fprintf(f_script, "set ylabel \"Quantidade\"\n");
+        fprintf(f_script, "set grid y\n");
+
+        // Gráfico de barras
+        fprintf(f_script, "set style fill solid 0.5 border -1\n");
+        fprintf(f_script, "set boxwidth 0.8 relative\n");
+        fprintf(f_script, "set xtics rotate by -45\n");
+
+        fprintf(f_script, "plot \"dados.txt\" using 1:2 with boxes title \"Mulheres\" lc rgb \"blue\"\n");
+        fclose(f_script);
+    }
+
+    printf("\nGerando grafico... Aguarde.\n");
+
+    
+    //Abre o grafico altomaticamente
+    
+    system("gnuplot -persist script_evolucao_mulheres.gp");
 
     // Fecha o arquivo CSV
     fclose(arquivo);
