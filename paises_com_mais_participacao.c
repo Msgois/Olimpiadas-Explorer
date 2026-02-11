@@ -64,7 +64,7 @@ char *analisar_celula_csv(char **cursor) {
 
   // Procura caracteres a frente para descobrir onde a string acaba.
   char *fim = inicio;
-  while (*fim && *fim != ',' && *fim != '\n') {
+  while (*fim && *fim != ',' && *fim != '\r' && *fim != '\n') {
     fim++;
   }
 
@@ -86,7 +86,7 @@ char *analisar_celula_csv(char **cursor) {
  */
 typedef struct {
   char noc[5];                  /**< National Occupational Classification. */
-  char nome_do_pais[257];       /**< O nome do país. */
+  char nome_do_pais[258];       /**< O nome do país. */
   int quantidade_de_atletas;    /**< O número de atletas que competiram em nome do país. */
 } Pais;
 
@@ -142,7 +142,7 @@ int paises_com_mais_participacao() {
 
     // NOC.
     celula = analisar_celula_csv(&cursor);
-    strncpy(paises[paises_indice].noc, celula, 4);
+    strncpy(paises[paises_indice].noc, celula, 5);
 
     if (strcmp(celula, "TUV") == 0) {
       noc_tuvalu = 1;
@@ -173,7 +173,7 @@ int paises_com_mais_participacao() {
       celula = "Refugee Olympic Team";
     }
 
-    strncpy(paises[paises_indice].nome_do_pais, celula, 256);
+    strncpy(paises[paises_indice].nome_do_pais, celula, 258);
 
     // Inicializando a quantidade de atletas.
     paises[paises_indice].quantidade_de_atletas = 0;
@@ -193,7 +193,7 @@ int paises_com_mais_participacao() {
   }
 
   // Esporte que será pesquisado.
-  char discipline[257];
+  char discipline[258];
   printf("Escolha um esporte:\n");
   scanf(" %256s", discipline);
 
@@ -238,7 +238,7 @@ int paises_com_mais_participacao() {
     return 1;
   }
 
-  printf("=== Top 10 Países com mais jogadores de %s (nomes dos países em inglês) ===", discipline);
+  printf("=== Top 10 Países com mais competidores de %s (nomes dos países em inglês) ===", discipline);
   printf("\n");
   for (int i = 0; i < 10; i++) {
     fprintf(data, "%d %s %d\n", i, paises[i].nome_do_pais, paises[i].quantidade_de_atletas);

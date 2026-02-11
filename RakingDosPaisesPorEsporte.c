@@ -267,9 +267,6 @@ int RakingDosPaisesPorEsporte () {
             
             // Rotaciona os nomes dos países para não amontoar
             fprintf(gnuplot_pipe, "set xtics rotate by -45\n");
-            
-            // Configura o terminal para abrir janela no Windows
-            fprintf(gnuplot_pipe, "set term windows enhanced\n");
 
             // Plota: Coluna 2 (medalhas) e xtic(1) (NOC)
             fprintf(gnuplot_pipe, "plot 'dados_grafico.dat' using 2:xtic(1) with boxes title 'Medalhas' lc rgb 'blue'\n");
