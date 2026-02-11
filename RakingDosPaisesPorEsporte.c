@@ -216,9 +216,7 @@ int RakingDosPaisesPorEsporte () {
     AcessarRegioes (listaDosPaises, &TotalDePaises);
 
     printf("\nDigite o esporte para o ranking em ingles: ");
-    fflush (stdin);
-    fgets (esporte, sizeof (esporte), stdin);
-    esporte [strcspn(esporte, "\n\r")] = 0;
+    scanf (" %[^\n]", esporte);
 
     ContarMedalhas (listaDosPaises, &TotalDePaises, esporte);
 
